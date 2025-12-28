@@ -33,7 +33,6 @@ ENV/
 
 # Environment variables
 .env
-.env.example
 
 
 # Database files
