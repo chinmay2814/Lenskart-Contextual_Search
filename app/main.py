@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.config import get_settings
-from app.db.database import init_db
+from app.db.database import init_db, get_db_context
 from app.api.routes import (
     products_router,
     search_router,
@@ -25,6 +25,63 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+
+async def auto_seed_if_empty():
+    """
+    Automatically seed sample data if the database is empty.
+    This ensures the deployed app has data to search.
+    """
+    import json
+    import os
+    from sqlalchemy import func
+    from app.models.product import Product
+    from app.models.schemas import ProductCreate
+    from app.services.ingestion_service import get_ingestion_service
+    
+    try:
+        with get_db_context() as db:
+            # Check if products already exist
+            product_count = db.query(func.count(Product.id)).scalar() or 0
+            
+            if product_count > 0:
+                logger.info(f"Database already has {product_count} products. Skipping auto-seed.")
+                return
+            
+            logger.info("Database is empty. Auto-seeding sample data...")
+            
+            # Find sample data file
+            possible_paths = [
+                "data/sample_eyewear.json",
+                "./data/sample_eyewear.json",
+                "/app/data/sample_eyewear.json",  # Railway path
+            ]
+            
+            data_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    data_path = path
+                    break
+            
+            if not data_path:
+                logger.warning("Sample data file not found. Skipping auto-seed.")
+                return
+            
+            # Load and seed data
+            with open(data_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            
+            products_data = data.get("products", data)
+            logger.info(f"Found {len(products_data)} products to seed")
+            
+            ingestion_service = get_ingestion_service()
+            products = [ProductCreate(**p) for p in products_data]
+            created = ingestion_service.ingest_products_batch(db, products)
+            
+            logger.info(f"[+] Auto-seeded {len(created)} products successfully!")
+            
+    except Exception as e:
+        logger.error(f"Auto-seed failed: {e}")
 
 
 @asynccontextmanager
@@ -46,6 +103,9 @@ async def lifespan(app: FastAPI):
     # Pre-load embedding model (warm-up)
     from app.services.embedding_service import get_embedding_service
     get_embedding_service()
+    
+    # Auto-seed data if database is empty
+    await auto_seed_if_empty()
     
     logger.info("Application started successfully!")
     logger.info(f"API Documentation: http://localhost:8000/docs")
