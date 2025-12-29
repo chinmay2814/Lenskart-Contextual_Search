@@ -2,6 +2,17 @@
 
 An intelligent product search platform that understands natural language queries, learns from user behavior, and provides explainable AI-powered results.
 
+## Live Demo
+
+**Production URL**: [https://lenskart-ai-search-platform.up.railway.app/](https://lenskart-ai-search-platform.up.railway.app/)
+
+| Endpoint | URL |
+|----------|-----|
+| API Docs (Swagger) | [https://lenskart-ai-search-platform.up.railway.app/docs](https://lenskart-ai-search-platform.up.railway.app/docs) |
+| Health Check | [https://lenskart-ai-search-platform.up.railway.app/health](https://lenskart-ai-search-platform.up.railway.app/health) |
+| Quick Search | [https://lenskart-ai-search-platform.up.railway.app/search/quick?q=aviator+sunglasses](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=aviator+sunglasses) |
+| All Products | [https://lenskart-ai-search-platform.up.railway.app/products/](https://lenskart-ai-search-platform.up.railway.app/products/) |
+
 ## Features
 
 - **Semantic Search**: Understands natural language queries like "stylish sunglasses for men under 5000"
@@ -206,14 +217,16 @@ Generates human-readable explanations:
 
 ## Sample Queries
 
-Try these searches to test the system:
+Try these searches on the live demo:
 
-- "stylish sunglasses for men under 5000"
-- "blue light blocking glasses for computer"
-- "polarized aviator sunglasses gold"
-- "lightweight titanium frames"
-- "kids eyeglasses flexible"
-- "progressive reading glasses"
+| Query | Try It |
+|-------|--------|
+| Aviator sunglasses | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=aviator+sunglasses) |
+| Blue light glasses | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=blue+light+blocking+glasses) |
+| Polarized sunglasses | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=polarized+sunglasses) |
+| Kids eyeglasses | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=kids+eyeglasses) |
+| Titanium frames | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=lightweight+titanium+frames) |
+| Reading glasses | [Try](https://lenskart-ai-search-platform.up.railway.app/search/quick?q=progressive+reading+glasses) |
 
 ## Project Structure
 
@@ -273,6 +286,23 @@ python scripts/generate_sample_events.py 100
 | Learning from behavior | 20% | Event tracking, behavior scoring, ranking adjustments |
 | Code quality & modularity | 20% | Clean architecture, separation of concerns |
 | AI integration quality | 15% | Query expansion, result explanations via Groq |
+
+## Deployment
+
+The application is deployed on **Railway** with automatic CI/CD from GitHub.
+
+- **Platform**: Railway
+- **Region**: US West
+- **Auto-seed**: Database is automatically populated with 48 sample eyewear products on first startup
+
+### Deploy Your Own
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template)
+
+1. Fork this repository
+2. Connect to Railway
+3. Add environment variable: `GROQ_API_KEY` (optional, for AI features)
+4. Deploy!
 
 ## License
 
